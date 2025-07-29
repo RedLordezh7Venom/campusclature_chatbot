@@ -1,0 +1,1 @@
+# Loads documents for RAG

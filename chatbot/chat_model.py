@@ -35,5 +35,5 @@ qa_chain = ConversationalRetrievalChain.from_llm(
 )
 
 if __name__ == "__main__":
-    response = qa_chain.run("kal mera science ka test hai kya karu ")
-    print(response)
+    response = qa_chain.invoke("kal mera science ka test hai kya karu ")
+    print(response['answer'])

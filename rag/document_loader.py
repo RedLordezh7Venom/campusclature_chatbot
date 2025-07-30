@@ -1,4 +1,4 @@
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 pdf_path = "cbse_courses_dataset.pdf"
 # Load PDF with PyPDFLoader
 loader = PyPDFLoader(pdf_path)

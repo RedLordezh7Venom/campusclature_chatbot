@@ -73,5 +73,3 @@ ENV/
 env.bak/
 venv.bak/
 
-# Vector DB memory
-memory/

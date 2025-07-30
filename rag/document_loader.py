@@ -1,5 +1,5 @@
 from langchain.document_loaders import PyPDFLoader
-pdf_path = "/content/cbse_courses_dataset.pdf"
+pdf_path = "cbse_courses_dataset.pdf"
 # Load PDF with PyPDFLoader
 loader = PyPDFLoader(pdf_path)
 pages = loader.load()

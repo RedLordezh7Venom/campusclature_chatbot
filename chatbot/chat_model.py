@@ -1,7 +1,11 @@
-# RAG model implementation
+from langchain_groq import ChatGroq
+from langchain.schema import SystemMessage, HumanMessage
+from langchain.prompts import PromptTemplate
+from prompts.campus_waifu import prompt_template
+
 prompt = PromptTemplate(
     input_variables=["context", "question"],
-    template=prompt_template,
+    template=prompt_template
 )
 
 from langchain.chains import ConversationalRetrievalChain

@@ -1,4 +1,5 @@
-# Retrieves relevant documentsfrom langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from rag.document_loader import pages
 
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 chunks = splitter.split_documents(pages)  # ✅ Correct for Document list

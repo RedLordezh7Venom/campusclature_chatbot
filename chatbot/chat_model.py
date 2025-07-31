@@ -5,8 +5,9 @@ from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from rag.retriever import vector_store
 from prompts.campus_waifu import prompt_template
+from langchain_core.runnables.history import RunnableWithMessageHistory
 
-from chatbot.memory_manager import memory
+from chatbot.memory_manager import get_session_history
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -28,19 +29,26 @@ from langchain.chains import ConversationalRetrievalChain
 qa_chain = ConversationalRetrievalChain.from_llm(
     llm=llm,
     retriever=vector_store.as_retriever(search_kwargs={"k": 4}),
-    memory=memory,
     combine_docs_chain_kwargs={"prompt": prompt},
     verbose=True  # optional: for debugging
 )
 
+with_message_history = RunnableWithMessageHistory(
+    qa_chain,
+    get_session_history,
+    input_messages_key="question",
+    history_messages_key="chat_history",
+)
+
 if __name__ == "__main__":
-    response = qa_chain.invoke("thursday ko mera  science  ka exam hai, wednesday ko maths ka exam hai ")
+    config = {"configurable": {"session_id": "test_session"}}
+    response = with_message_history.invoke({"question": "thursday ko mera  science  ka exam hai, wednesday ko maths ka exam hai "}, config=config)
     print(response['answer'])
     print("==================================")
-    response = qa_chain.invoke("aaj kal mosam bada acha hai")
+    response = with_message_history.invoke({"question": "aaj kal mosam bada acha hai"}, config=config)
     print(response['answer'])
     print("==================================")
-    response = qa_chain.invoke("ek baar batana maine kya batai thi kon se tests hain konse days ko ??")
+    response = with_message_history.invoke({"question": "ek baar batana maine kya batai thi kon se tests hain konse days ko ??"}, config=config)
     print(response['answer'])
     print("==================================")
     print(response)

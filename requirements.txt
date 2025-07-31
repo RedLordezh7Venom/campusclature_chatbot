@@ -1,0 +1,8 @@
+langchain-groq
+langchain-openai
+python-dotenv
+langchain-community
+langchain-chroma
+langchain
+pypdf
+tiktoken

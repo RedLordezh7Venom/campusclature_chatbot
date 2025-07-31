@@ -9,7 +9,7 @@ from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
-    MessagesPlaceholder
+    # Removed MessagesPlaceholder
 )
 
 from langchain_openai import ChatOpenAI
@@ -17,7 +17,7 @@ from rag.retriever import vector_store
 from prompts.campus_waifu import prompt_template
 from prompts.campus_waifu import sys_prompt,chat_prompt
 
-from chatbot.memory_manager import memory
+from chatbot.memory_manager import memory # Re-added memory import
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -39,7 +39,7 @@ from chatbot.memory_manager import chat_histories,mem_retriever,get_history,get_
 prompt = ChatPromptTemplate.from_messages([
     system_message_prompt,
     human_message_prompt,
-    MessagesPlaceholder(variable_name="history")
+    # Removed MessagesPlaceholder(variable_name="chat_history")
 ])
 #main chain
 from langchain.chains import ConversationalRetrievalChain
@@ -47,7 +47,7 @@ from langchain.chains import ConversationalRetrievalChain
 qa_chain = ConversationalRetrievalChain.from_llm(
     llm=llm,
     retriever=vector_store.as_retriever(search_kwargs={"k": 4}),
-    memory=memory,
+    memory=memory, # Re-added memory
     combine_docs_chain_kwargs={"prompt": prompt},
     verbose=True  # optional: for debugging
 )
@@ -55,7 +55,7 @@ runnable = RunnableWithMessageHistory(
             qa_chain,
             get_history,
             input_messages_key="question",
-            history_messages_key="history"
+            history_messages_key="chat_history"
         )
 
 def generate_response(user_message: str, session_id: str = "default") -> str:
@@ -64,23 +64,31 @@ def generate_response(user_message: str, session_id: str = "default") -> str:
     combined_input = f"{user_message}\n\nRelevant past memory:\n{past_context}" if past_context else user_message
 
     response = runnable.invoke(
-        {"input": combined_input},
+        {"question": combined_input},
         config={"configurable": {"session_id": session_id}}
     )
 
     # ✅ Save to long-term memory for future use
-    add_memory(f"User: {user_message}\nBot: {response.content}")
+    add_memory(f"User: {user_message}\nBot: {response['answer']}")
 
-    return response.content
+    return response['answer']
 
 if __name__ == "__main__":
-    response = qa_chain.invoke("thursday ko mera  science  ka exam hai, wednesday ko maths ka exam hai ")
-    print(response['answer'])
-    print("==================================")
-    response = qa_chain.invoke("aaj kal mosam bada acha hai")
-    print(response['answer'])
-    print("==================================")
-    response = qa_chain.invoke("ek baar batana maine kya batai thi kon se tests hain konse days ko ??")
-    print(response['answer'])
-    print("==================================")
+    q1 = "I have a science exam on sunday , and maths exam on monday"
+    response = generate_response(q1, session_id="test_user_123")
     print(response)
+
+    q2 = "What days do I have the exam??"
+    response = generate_response(q2, session_id="test_user_123")
+    print(response)
+
+    # response = qa_chain.invoke("thursday ko mera  science  ka exam hai, wednesday ko maths ka exam hai ")
+    # print(response['answer'])
+    # print("==================================")
+    # response = qa_chain.invoke("aaj kal mosam bada acha hai")
+    # print(response['answer'])
+    # print("==================================")
+    # response = qa_chain.invoke("ek baar batana maine kya batai thi kon se tests hain konse days ko ??")
+    # print(response['answer'])
+    # print("==================================")
+    # print(response)

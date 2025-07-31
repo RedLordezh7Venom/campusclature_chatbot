@@ -43,4 +43,7 @@ if __name__ == "__main__":
     response = qa_chain.invoke("ek baar batana maine kya batai thi kon se tests hain konse days ko ??")
     print(response['answer'])
     print("==================================")
+    response = qa_chain.invoke("ek baar batana maine kya baate ki hai mai bhul gya??")
+    print(response['answer'])
+    print("==================================")
     print(response)
